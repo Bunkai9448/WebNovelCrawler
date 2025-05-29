@@ -16,5 +16,7 @@ sudo apt-get install python3-pip
 ### https://pypi.org/project/pykakasi/ 
 pip install Janome --break-system-packages
 pip install pykakasi --break-system-packages
+### yomituki.py uses ruby, in case it's not in the system
+sudo apt-get install ruby-full
 
 echo "Dependencies Installed"
