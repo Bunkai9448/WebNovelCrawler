@@ -1,5 +1,5 @@
 # coding:utf-8
-# python test.py https://www.aozora.gr.jp/cards/000051/files/47086_27953.html --title "淡島寒月氏" --author "幸田露伴" --card_id 000051 --file_id 47086_27953 --description "A great novel"
+# python test.py https://www.aozora.gr.jp/cards/000051/files/47086_27953.html --title "淡島寒月氏" --author "幸田露伴" --card_id 000051 --file_id 47086_27953 --description "A great novel" --cover cover.png
 
 import argparse
 import requests
@@ -115,7 +115,7 @@ def build_page(content, title, chapter_id):
     return filename, epub_page
 
 class AozoraNovel:
-    def __init__(self, url, card_id, file_id, title, author, description):
+    def __init__(self, url, card_id, file_id, title, author, description, cover):
         self.url = url
         self.card_id = card_id
         self.file_id = file_id
@@ -127,6 +127,7 @@ class AozoraNovel:
         self.novel_title = title.strip()
         self.author = author.strip()
         self.about = description.strip() if description else 'No description provided.'
+        self.cover = cover
 
     def get_meta(self):
         print('[Main Thread] Setting Metadata from command-line arguments...')
@@ -137,6 +138,38 @@ class AozoraNovel:
         self.book.add_author(self.author)
         # Sanitize description to avoid invalid XML characters
         self.book.add_metadata('DC', 'description', re.sub(r'[^\x09\x0A\x0D\x20-\uD7FF\uE000-\uFFFD]', '', self.about))
+        # Add cover image if provided
+        if self.cover and os.path.exists(self.cover):
+            try:
+                with open(self.cover, 'rb') as cover_file:
+                    cover_data = cover_file.read()
+                # Use set_cover to add the cover image (this adds it to the manifest)
+                self.book.set_cover("images/cover.png", cover_data)
+                # Create cover page
+                cover_page_content = '''<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja">
+<head>
+    <title>Cover</title>
+    <link rel="stylesheet" type="text/css" href="style/nav.css"/>
+</head>
+<body>
+    <div class="cover">
+        <img src="images/cover.png" alt="Cover" style="max-width:100%;height:auto;"/>
+    </div>
+</body>
+</html>'''
+                cover_page = epub.EpubHtml(
+                    title="Cover",
+                    file_name="cover_page.xhtml",
+                    content=cover_page_content.encode('utf-8'),
+                    lang='ja'
+                )
+                self.book.add_item(cover_page)
+                self.book.spine.insert(0, cover_page)  # Add cover page to the beginning of the spine
+            except Exception as e:
+                print(f"Error adding cover image: {e}")
+                PrintException()
 
     def get_content(self):
         print('[Main Thread] Fetching Content...')
@@ -260,10 +293,11 @@ def main():
     parser.add_argument('--card_id', required=True, help='Card ID of the novel')
     parser.add_argument('--file_id', required=True, help='File ID of the novel')
     parser.add_argument('--description', default='', help='Description of the novel (optional)')
+    parser.add_argument('--cover', default=None, help='Path to cover image file (e.g., cover.png) (optional)')
     
     args = parser.parse_args()
     
-    novel = AozoraNovel(args.url, args.card_id, args.file_id, args.title, args.author, args.description)
+    novel = AozoraNovel(args.url, args.card_id, args.file_id, args.title, args.author, args.description, args.cover)
     novel.get_meta()
     novel.get_content()
     novel.build_menu()
