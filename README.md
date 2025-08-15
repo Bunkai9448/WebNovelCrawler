@@ -35,3 +35,6 @@ Furigana uses kanome and kakasi to work, and will be slow when processing novel 
 requests, beautifulsoup4, ebooklib, aiohttp</br>
 ## Additional required libs for furigana: 
 kanome, kakasi
+
+##Extra, for MD files to epub:
+https://github.com/AlexPof/mark2epub
