@@ -37,6 +37,6 @@ requests, beautifulsoup4, ebooklib, aiohttp</br>
 kanome, kakasi
 
 ## Extra:
-https://github.com/AlexPof/mark2epub, for MD files to epub
-https://github.com/bohdanbobrowski/blog2epub, for blogs to epub
+https://github.com/AlexPof/mark2epub, for MD files to epub</br>
+https://github.com/bohdanbobrowski/blog2epub, for blogs to epub</br>
 
