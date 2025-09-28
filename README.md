@@ -36,5 +36,7 @@ requests, beautifulsoup4, ebooklib, aiohttp</br>
 ## Additional required libs for furigana: 
 kanome, kakasi
 
-##Extra, for MD files to epub:
-https://github.com/AlexPof/mark2epub
+## Extra:
+https://github.com/AlexPof/mark2epub, for MD files to epub
+https://github.com/bohdanbobrowski/blog2epub, for blogs to epub
+
